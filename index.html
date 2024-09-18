@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Mapping Embeddings 🗺️🔍</title>
+
+    <link rel="stylesheet" href="dist/reset.css">
+    <link rel="stylesheet" href="dist/reveal.css">
+    <link rel="stylesheet" href="dist/theme/white.css">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+
+    <!-- Custom controls -->
+    <link rel="stylesheet" href="plugin/customcontrols/customcontrols.css">
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <!--
+                    Lowercase in headings
+                    https://github.com/hakimel/reveal.js/issues/2226
+                -->
+                <style>
+                    .reveal h1,
+                    .reveal h2,
+                    .reveal h3,
+                    .reveal h4,
+                    .reveal h5 {
+                        text-transform: none;
+                    }
+                </style>
+                <h2>Mapping Embeddings <div style="display: inline" title="Hic svnt dracones!">🗺️🔍</div></h2>
+                <p>From meaning to vectors and back</p>
+                <small>
+                    <p><a href="https://jgalego.github.io">João Galego</a> <div title="Hey there, I'm a brain in a ket!">$$\left|\text{🧠}\right&gt;$$</div></p>
+                </small>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Contents 📓</h2>
+                    <ol>
+                        <li>Intro to Embeddings</li>
+                        <li>Working with Vector Databases</li>
+                        <li>Dimensionality Reduction</li>
+                        <li>Advanced Retrieval Strategies</li>
+                        <li>Retrieval Augmented Generation (RAG)</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h4>Warning ⚠️</h4>
+                    <p>This deck is a work in progress…</p>
+                    <p class="fragment fade-in">and always will be</p>
+                </section>
+
+                <section>
+                    <h4>Feel free to search around 🔎</h4>
+                    <figure>
+                        <img data-src="images/ctrl+shift+f.png" width="50%"/>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Cite this presentation 📑</h4>
+                    <pre><code class="language-latex">@misc{a-tour-of-genai-jgalego,
+    title = {Mapping Embeddings: from meaning to vectors and back},
+    author = {Galego, João},
+    howpublished = \url{jgalego.github.io/MappingEmbeddings},
+    year = {2024}
+}</code></pre>
+                </section>
+
+                <section>
+                    <h4>Note on implementation 👨‍💻</h4>
+                    <p>The slides were created using <code><a href="https://revealjs.com/">reveal.js</a></code></p>
+                    <p>and the presentation is hosted on <a href="https://danielabaron.me/blog/build-and-publish-presentation-with-html-and-css/">GitHub Pages</a></p>
+                </section>
+
+                <section>
+                    <h4>Want to contribute? ✨</h4>
+                    <p>Just open an issue/PR for this project</p>
+                    <a href="https://github.com/JGalego/MappingEmbeddings">github.com/JGalego/MappingEmbeddings</a>
+                    <figure>
+                        <img data-src="images/help_wanted.gif" width="20%" />
+                    </figure>
+                </section>
+            </section>
+
+            <!-- Intro to Embeddings -->
+
+            <section>
+                <section>
+                    <h2>Intro to Embeddings</h2>
+                </section>
+
+                <section>
+                    <h4>Let's start by sending some <span style="color:red">love</span> to Amazon Titan...</h4>
+                </section>
+
+                <section>
+                    <h4><a href="https://gist.github.com/JGalego/8d21694f4415763aad3d9bcf24df1fe0">Titan Love 🔱💗</a></h4>
+                    <pre><code class="language-python" data-trim data-noescape data-line-numbers="|7|9-11|13-18|20-22">
+                        """
+                        Sends love to Amazon Titan for Embeddings 💖
+                        and gets a bunch of numbers in return 🔢
+                        """
+
+                        import json
+                        import boto3
+
+                        # Initialize Bedrock Runtime client
+                        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/bedrock-runtime.html
+                        bedrock = boto3.client("bedrock-runtime")
+
+                        # Call Amazon Titan for Embeddings model on "love"
+                        # https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html
+                        response = bedrock.invoke_model(
+                            modelId="amazon.titan-embed-text-v1",
+                            body="{\"inputText\": \"love\"}"
+                        )
+
+                        # Process the model response and print the final result
+                        body = json.loads(response.get('body').read())
+                        print(body['embedding'])
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h4>WTF?</h4>
+                    <img data-src="images/titan_love_embeddings.png" width="80%"/>
+                </section>
+
+                <section>
+                    <h4>Where is the <span style="color:red">love</span>?</h4>
+                    <img data-src="https://64.media.tumblr.com/0aec596c4bf1ce292b90d738dd8311a5/tumblr_ocvsr1tR9F1qek1oqo5_540.gif" width="50%"/>
+                    <p>Let's put this qustion on hold...</p>
+                </section>
+
+                <section>
+                    <h4>What are embeddings?</h4>
+                    <p>A numerical representation of a piece of information</p>
+                    <figure>
+                        <img data-src="images/embeddings_primer.png" />
+                        <figcaption>
+                            <small><b>Source:</b> Adapted from
+                                <a
+                                    href="https://arize.com/blog-course/embeddings-meaning-examples-and-how-to-compute/">Arize</a>
+                                and <a
+                                    href="https://towardsdatascience.com/creating-word-embeddings-coding-the-word2vec-algorithm-in-python-using-deep-learning-b337d0ba17a8">Medium</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>data $\rightarrow$ "meaningful" numbers</h4>
+                    <p><a href="https://huggingface.co/blog/getting-started-with-embeddings">💬</a> <a href="https://www.pinecone.io/learn/series/image-search/">🖼️</a> <a href="https://huggingface.co/blog/cappuch/audio-embedding-wtf">🔊</a> <a href="https://github.com/iejMac/clip-video-encode">🎞️</a></p>
+                </section>
+
+                <section>
+                    <h4>Example: <a href="https://txt.cohere.com/embedding-archives-wikipedia/">Embedding Wikipedia</a></h4>
+                    <p>What if you had the embeddings of <u>ALL</u> of Wikipedia?</p>
+                    <figure>
+                        <img data-src="images/embeddings_wikipedia_adapted.png" width="100%" />
+                        <figcaption>
+                            <small><b>Source:</b> Adapted from
+                                <a
+                                    href="https://txt.cohere.com/embedding-archives-wikipedia/">Cohere</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Example: <a href="https://opensearch.org/platform/search/vector-database.html">Amazon Music</a></h4>
+                    <figure>
+                        <img data-src="images/amazon_music_embeddings.png" width="50%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://aws.amazon.com/blogs/big-data/amazon-opensearch-services-vector-database-capabilities-explained/">AWS
+                                    Big Data Blog</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Example: <a href="https://research.google/blog/open-sourcing-the-embedding-projector-a-tool-for-visualizing-high-dimensional-data/">Embedding Projector</a></h4>
+                    <figure>
+                        <img data-src="https://2.bp.blogspot.com/-yL_425HS2ck/WEDZLk5cq0I/AAAAAAAABcI/kwy4F4Cmfi4jyG_InIiYu6F7y2-BKTXWQCLcB/s640/embedding-mnist.gif" width="80%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://research.google/blog/open-sourcing-the-embedding-projector-a-tool-for-visualizing-high-dimensional-data/">Google Research</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Why <span style="color:red">love</span>?</h4>
+                    <small class="fragment fade-in"><b>Rule of thumb:</b><br>1 token ~ 4 characters in English</small>
+                </section>
+
+                <section>
+                    <h4>Let's have a few tokens on <span style="color:orangered">tokenization</span>...</h4>
+                </section>
+
+                <section>
+                    <h4>Tokenization is the root of (almost) all evils</h4>
+                    <figure>
+                        <img data-src="images/tokenization_weirdness.png" width="60%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://youtu.be/zduSFxRajkE?t=6711">Andrej Karpathy</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>The reason why LLMs are <span style="color:red">bad</span> at math...</h4>
+                    <figure>
+                        <img data-src="images/insane_integer_tokenization.png" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://www.beren.io/2023-02-04-Integer-tokenization-is-insane/">Beren's Blog</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4><a href="https://tiktokenizer.vercel.app/?model=gpt2">Tiktoken</a>izing integers</h4>
+                    <figure>
+                        <img data-src="images/tiktokenizing_integers.png" width="80%" />
+                    </figure>
+                </section>
+
+                <section>
+                    <h4><a href="https://gist.github.com/JGalego/3e13c29655f06d795b597e0b1e29da19">Replicating <em>Integer Tokenization is Insane</em> 🤯 </a></h4>
+                    <figure>
+                        <img data-src="images/replicating_ifii.png" width="100%" />
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>All languages are not <s>created</s> <span style="color:orangered">tokenized</span> equal!</h4>
+                    <figure>
+                        <img data-src="images/tokenizers_languages.gif" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://huggingface.co/spaces/yenniejun/tokenizers-languages">Art Fish Intelligence</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Let's head back to the main feature...</h4>
+                    <img data-src="https://static1.howtogeekimages.com/wordpress/wp-content/uploads/2022/06/8dce5890.jpg" width="50%"/>
+                </section>
+
+                <section>
+                    <h4>How do we <em>actually</em> train an <span style="color:orangered">embedding model</span>?</h4>
+                </section>
+
+                <section>
+                    <h4>Step 1: Model</h4>
+                    <pre><code>pip install -q sentence-transformers</code></pre>
+                    <img data-src="images/sentence_transformer.png" width="60%"/>
+                </section>
+
+                <section>
+                    <h4>There are plenty to choose from on 🤗</h4>
+                    <img data-src="images/sentence_similarity_models.png"/>
+                </section>
+
+                <section>
+                    <h4>Step 2: Data + Loss Function</h4>
+                    <figure>
+                        <img data-src="images/datasets_table.png" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://huggingface.co/blog/how-to-train-sentence-transformers">🤗</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Step 3: Test</h4>
+                    <figure>
+                        <img data-src="images/mteb.png" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://huggingface.co/spaces/mteb/leaderboard">🤗</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>How <span style="color:green">good</span>/<span style="color:red">bad</span> is Amazon Titan for Embeddings?</h4>
+                    <small>Inspired by <a href="https://www.philschmid.de/amazon-titan-embeddings">Phil Schmid's post</a></small>
+                </section>
+
+                <section>
+                    <h4>October 2023: <span style="color:orange">amazon.titan-embed-text-v1</span></h4>
+                    <img data-src="images/titan_oct_2023.png"/>
+                </section>
+
+                <section>
+                    <h4>September 2024: <span style="color:orange">amazon.titan-embed-text-v2:0</span></h4>
+                    <img data-src="images/titan_sep_2024.png"/>
+                </section>
+
+            </section>
+
+            <!-- Working with Vector Databases -->
+
+            <section>
+                <section>
+                    <h2>Working with Vector Databases</h2>
+                </section>
+
+                <section>
+                    <h4 style="display:none">Quote #1</h4>
+                    <blockquote>
+                        "The most important piece of the preprocessing pipeline, from a systems standpoint, is the vector database."
+                    </blockquote>
+                    <small><a href="https://a16z.com/emerging-architectures-for-llm-applications/">Andreessen Horowitz</a></small>
+                </section>
+
+                <section>
+                    <h4 style="display:none">Quote #2</h4>
+                    <blockquote>
+                        "In the future, we believe that <b>every</b> database will be a vector database."
+                    </blockquote>
+                    <small><a href="https://cloud.google.com/discover/what-is-a-vector-database">Google</a></small>
+                </section>
+
+                <section>
+                    <h4>Vector Databases Everywhere</h4>
+                    <img data-src="images/vector_databases_oprah.jpg"/>
+                </section>
+
+                <section>
+                    <h4>But what exactly is a vector database?</h4>
+                    <small>Any database that treats vectors as <span style="color:orange">first class citizens</span> is a vector database.</small>
+                    <figure>
+                        <img data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe88ebbacb848b09e477d11eedf4209d10ea4ac0a-1399x537.png&w=1920&q=75" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://www.pinecone.io/learn/vector-database/">Pinecone</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4 style="display:none">CR7 Embeddings ⚽</h4>
+                    <figure>
+                        <img data-src="images/cr7_embeddings.png" width="50%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://towardsdatascience.com/all-you-need-to-know-about-vector-databases-and-how-to-use-them-to-augment-your-llm-apps-596f39adfedb">Medium</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Vector Database Types</h4>
+                    <figure>
+                        <img data-src="images/vector_database_types.png" width="60%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://towardsdatascience.com/all-you-need-to-know-about-vector-databases-and-how-to-use-them-to-augment-your-llm-apps-596f39adfedb">Medium</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Vector Databases on <span style="color:orange">AWS</span></h4>
+                    <ul>
+                        <li><a href="https://aws.amazon.com/blogs/big-data/amazon-opensearch-services-vector-database-capabilities-explained/">Amazon OpenSearch Service</a></li>
+                        <li><a href="https://aws.amazon.com/blogs/database/building-ai-powered-search-in-postgresql-using-amazon-sagemaker-and-pgvector/">Amazon RDS PgSQL with pgvector</a></li>
+                        <li><a href="https://aws.amazon.com/blogs/database/leverage-pgvector-and-amazon-aurora-postgresql-for-natural-language-processing-chatbots-and-sentiment-analysis/">Amazon Aurora PgSQL with pgvector</a></li>
+                        <li><a href="https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html">Amazon MemoryDB for Redis</a></li>
+                        <li><a href="https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html">Amazon DocumentDB</a></li>
+                        <li><a href="https://medium.com/swlh/add-similarity-search-to-dynamodb-with-faiss-c68eb6a48b08">Amazon DynamoDB + FAISS</a></li>
+                        <li><a href="https://aws.amazon.com/neptune/machine-learning/">Amazon Neptune ML</a></li>
+                        <li><a href="https://docs.aws.amazon.com/neptune-analytics/latest/userguide/vector-similarity.html">Amazon Neptune Analytics</a></li>
+                        <li><a href="https://aws.amazon.com/marketplace/search/results?searchTerms=vector+database">AWS Marketplace</a></li>
+                        <li>Others: <a href="https://lancedb.github.io/lancedb/">LanceDB</a>, <a href="https://kuzudb.com/">Kùzu</a>, Partner Solution</li>
+                        </ul>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Demo: <a href=https://github.com/asg017/sqlite-rembed/pull/9">SQLite + Amazon Bedrock</a></h4>
+                </section>
+
+                <section>
+                    <h4>Multimodal vector search with <a href="https://github.com/asg017/sqlite-rembed">sqlite-rembed</a></h4>
+                    <img data-src="images/multimodal_search_sqlite_rembed.png"/>
+                </section>
+
+                <section>
+                    <h4>Mind the (multimodal) gap!</h4>
+                    <figure>
+                        <img data-src="images/multimodal_gap.png" width="90%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                Adapted from <a
+                                    href="https://jina.ai/news/the-what-and-why-of-text-image-modality-gap-in-clip-models/">JinaAI</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4><a href="https://gist.github.com/JGalego/5e33df5dcb85ba6a3ea0016be3f432c6">Modality Gap Explorer 🧭</a></h4>
+                    <img data-src="images/modality_gap_explorer.gif"/>
+                </section>
+            </section>
+
+            <!-- Dimensionality Reduction Techniques -->
+
+            <section>
+                <section>
+                    <h2>Dimensionality Reduction Techniques</h2>
+                </section>
+
+                <section>
+                    <h4>Dimensionality Reduction</h4>
+                    <p>Mostly for visualization and preprocessing</p>
+                </section>
+
+                <section>
+                    <h4>Categories</h4>
+                    <ul>
+                        <li>global vs local</li>
+                        <li>linear vs non-linear</li>
+                        <li>parametric vs non-parametric</li>
+                        <li>deterministic vs stochastic</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>Techniques</h4>
+                    <ul>
+                        <li><a href="https://www.cs.cmu.edu/~elaw/papers/pca.pdf">PCA</a> captures global patterns</li>
+                        <li><a href="https://lvdmaaten.github.io/tsne/">t-SNE</a> emphasizes local patterns and clusters</li>
+                        <li><a href="https://arxiv.org/abs/1802.03426">UMAP</a> handles complex relationships</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4 style="display:none">Toy Example</h4>
+                    <figure>
+                        <img data-src="images/data_dim_redux.png" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                Adapted from <a
+                                    href="https://www.nature.com/articles/s41587-020-00809-z">Kobak & Linderman (2021)</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Von Neumann's <s>Elephant</s> Woolly Mammoth</h4>
+                    <figure>
+                        <img data-src="images/woolly_mammoth_dim_redux.png" width="90%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://pair-code.github.io/understanding-umap/">PAIR</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>The map is <span class="fragment highlight-red" data-fragment-index="1">not</span> the territory!</h4>
+                    <span class="r-stack">
+                        <img data-src="images/map_projections.png" class="fragment fade-out" data-fragment-index="1"/>
+                        <img data-src="images/earth_rotating.gif" class="fragment fade-in" data-fragment-index="1"/>
+                    </span>
+                </section>
+
+                <section>
+                    <h4>Now, you may be wondering...</h4>
+                </section>
+
+                <section>
+                    <h4>How do models represent more features<br>than they have dimensions?</h4>
+                    <p class="fragment fade-in">Let's talk about  <span style="color:red">Superposition</span></p>
+                    <small class="fragment fade-in">(not the quantum type)</small>
+                </section>
+
+                <section>
+                    <h4>Superposition Hypothesis</h4>
+                    <figure>
+                        <img data-src="images/superposition_hypothesis.png" width="90%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://transformer-circuits.pub/2022/toy_model/index.html">Anthropic</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>The Hunt for Monosemanticity</h4>
+                    <figure>
+                        <img data-src="images/monosemanticity.png" width="90%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html">Anthropic</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Example: Golden Gate Bridge 🌉</h4>
+                    <figure>
+                        <img data-src="images/golden_gate1.png"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html">Anthropic</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Example: Golden Gate Bridge 🌉</h4>
+                    <figure>
+                        <img data-src="images/golden_gate2.png" width="70%"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html">Anthropic</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Example: Golden Gate Bridge 🌉</h4>
+                    <figure>
+                        <img data-src="images/golden_gate3.png"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html">Anthropic</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Example: Golden Gate Bridge 🌉</h4>
+                    <figure>
+                        <img data-src="images/golden_gate4.png" width="60%"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html">Anthropic</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Advanced Retrieval Strategies</h2>
+                </section>
+
+                <section>
+                    <h4>When (naive) vector search fails!</h4>
+                    <img data-src="images/distractors.png" width="50%"/>
+                </section>
+
+                <section>
+                    <h4>RAG Triad</h4>
+                    <figure>
+                        <img data-src="images/rag_triad.jpg"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://www.trulens.org/trulens_eval/core_concepts_rag_triad/">TruLens</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Advanced Retrieval Techniques</h4>
+                    <small>
+                        <ol type="A">
+                            <li>Query transformations</li>
+                            <ul>
+                                <li>Generated answers<br>$\texttt{query} \rightarrow \texttt{LLM} \rightarrow \texttt{hypothetical answer}$</li>
+                                <li>Multiple queries<br>$\texttt{query} \rightarrow \texttt{LLM} \rightarrow \texttt{sub-queries}$</li>
+                            </ul>
+                            <li>Cross-encoder re-ranking</li>
+                            <li>Embedding adaptors</li>
+                            <li>Other techniques</li>
+                            <ul>
+                                <li>Fine-tune embedding model</li>
+                                <li>Fine-tune LLM for retrieval (<a href="https://arxiv.org/abs/2310.01352">RA-DIT</a>, <a href="https://arxiv.org/abs/2310.07713">InstructRetro</a>)</li>
+                                <li>Deep embedding adaptors</li>
+                                <li>Deep relevance modelling</li>
+                                <li>Deep chunking</li>
+                            </ul>
+                        </ol>
+                    </small>
+                </section>
+
+                <section>
+                    <h4>RAG Fusion</h4>
+                    <figure>
+                        <img data-src="images/rag_fusion.png" width="70%"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://blog.langchain.dev/query-transformations/">LangChain</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+            </section>
+
+            <!-- Demo: RAGMap-->
+
+            <section>
+                <section>
+                    <h2>Demo: <a href="https://github.com/JGalego/RAGmap">RAGmap 🗺️🔍</a></h2>
+                </section>
+
+                <section>
+                    <h4><a href="https://github.com/gabrielchua/RAGxplorer">RAGxplorer 🦙🦺</a></h4>
+                    <p>A simple tool for RAG visualizations</p>
+                    <img data-src="images/ragxplorer.png"/>
+                </section>
+
+                <section>
+                    <h4>First <span style="color:red">major</span> bug!</h4>
+                    <img data-src="images/ragxplorer_bug.png"/>
+                </section>
+
+                <section>
+                    <h4><a href="https://github.com/JGalego/RAGmap">RAGmap 🗺️🔍</a></h4>
+                    <p>Visualization tool for exploring embeddings</p>
+                    <img data-src="images/ragmap_hf_support.gif"/>
+                </section>
+
+                <section>
+                    <h4>RAG in a nutshell 🥜</h4>
+                    <ul class="fragment fade-in">
+                        <li class="fragment fade-in">LLMs are trained on HUGE amounts of data, but...</li>
+                        <li class="fragment fade-in">LLMs haven't seen <b>your</b> data</li>
+                        <li class="fragment fade-in">RAG is key to connecting LLMs to <b>external</b> data</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>RAG Stages</h4>
+                    <span class="r-stack">
+                        <ol class="fragment fade-out" data-fragment-index="1">
+                            <li>Load</li>
+                            <li>Index</li>
+                            <li>Store</li>
+                            <li>Query</li>
+                            <li>Evaluate</li>
+                            <li>Update*</li>
+                        </ol>
+                        <figure class="fragment fade-in" data-fragment-index="1">
+                            <img data-src="images/rag_stages.png" width="70%"/>
+                            <figcaption>
+                                <small><b>Source:</b>
+                                    <a href="https://docs.llamaindex.ai/en/stable/getting_started/concepts.html">LlamaIndex</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                    </span>
+                </section>
+
+                <section>
+                    <h4>Let's look at an example...</h4>
+                </section>
+
+                <section>
+                    <h4>Step 1: Load</h4>
+                    <figure>
+                        <img data-src="images/step1_load.png" width="70%"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://medium.com/@austenallred/every-amazon-shareholder-letter-as-downloadable-pdf-4eb2ae886018">Medium</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Step 2: Index + Store</h4>
+                    <img data-src="images/step2_index+store.png"/>
+                </section>
+
+                <section>
+                    <h4>Step 2a: Plot</h4>
+                    <img data-src="images/step2_plot.png"/>
+                </section>
+
+                <section>
+                    <h4>Step 3: Query</h4>
+                    <img data-src="images/step3_query.png"/>
+                </section>
+
+                <section>
+                    <h4>Step 4: Evaluate</h4>
+                    <span class="r-stack">
+                        <img class="fragment fade-out" data-src="images/step4_evaluate1.png" data-fragment-index="1" width="60%"/>
+                        <span class="fragment fade-in" data-fragment-index="1">
+                            <img class="fragment fade-out" data-src="images/step4_evaluate2.png" data-fragment-index="2" width="80%"/>
+                        </span>
+                        <img class="fragment fade-in" data-src="images/step4_evaluate3.png" data-fragment-index="2" width="60%"/>
+                    </span>
+                </section>
+
+            </section>
+
+            <!-- References -->
+
+            <section>
+                <section>
+                    <h2>References 📚</h2>
+                    <img data-src="https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F90cb787d-c3a1-48c4-86d1-84e7456a949a_500x213.gif"
+                        width="50%" />
+                </section>
+
+                <section>
+                    <h4>General</h4>
+                    <small>
+                        <ul>
+                            <li>
+                                (Modern Coding) <a href="https://zackproser.com/blog/introduction-to-embeddings">Introduction to embeddings (vectors) and how they work</a>
+                            </li>
+                            <li>
+                                (StackOverflow) <a href="https://stackoverflow.blog/2023/11/09/an-intuitive-introduction-to-text-embeddings/">An intuitive introduction to text embeddings</a>
+                            </li>
+                            <li>
+                                (Hugging Face) <a href="https://huggingface.co/blog/getting-started-with-embeddings">Getting Started with Embeddings</a>
+                            </li>
+                            <li>
+                                (Zilliz) <a href="https://zilliz.com/learn/everything-you-should-know-about-vector-embeddings">An Introduction to Vector Embeddings: What They Are and How to Use Them </a>
+                            </li>
+                        </ul>
+                    </small>
+                </section>
+
+                <section>
+                    <h4>Short Courses 👩‍🏫</h4>
+                    <small>
+                        <ul>
+                            <li>
+                                (Vectara) <a href="https://www.deeplearning.ai/short-courses/embedding-models-from-architecture-to-implementation/">Embedding Models: From Architecture to Implementation</a>
+                            </li>
+                            <li>
+                                (Weaviate) <a href="https://www.deeplearning.ai/short-courses/vector-databases-embeddings-applications/">Vector Databases: from Embeddings to Applications</a>
+                            </li>
+                            <li>
+                                (Chroma) <a href="https://www.deeplearning.ai/short-courses/advanced-retrieval-for-ai/">Advanced Retrieval for AI with Chroma</a>
+                            </li>
+                        </ul>
+                    </small>
+                </section>
+
+                <section>
+                    <h4>Advanced Courses 👨🏻‍🎓</h4>
+                    <small>
+                        <ul>
+                            <li>
+                                (MIT) <a href="http://introtodeeplearning.com/">6.S191</a>: Introduction to Deep Learning
+                            </li>                            
+                            <li>
+                                (Stanford) <a href="https://web.stanford.edu/class/cs224n/">CS224N</a>: Natural Language Processing
+                                with Deep Learning
+                            </li>
+                            <li>
+                                (Stanford) <a href="https://www.youtube.com/playlist?list=PLoROMvodv4rPt5D0zs3YhbWSZA8Q_DyiJ">CS224U</a>:
+                                Natural Language Understanding
+                            </li>
+                            <li>
+                                (Stanford) <a href="https://stanford-cs324.github.io/winter2023/">CS324</a>: Large Language Models
+                            </li>
+                            <li>
+                                (UMass) <a href="https://youtube.com/playlist?list=PLWnsVgP6CzaelCF_jmn5HrpOXzRAPNjWj">CS685</a>:
+                                Advanced Natural Language Processing
+                            </li>
+                            <li>
+                                (ETH) <a href="https://rycolab.io/classes/llm-s24/">263-5354-00L</a>: Large Language Models
+                            </li>
+                        </ul>
+                    </small>
+                </section>
+            </section>
+        </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/search/search.js"></script>
+    <script src="plugin/math/math.js"></script> <!-- https://revealjs.com/math/ -->
+    <script src="plugin/menu/menu.js"></script> <!-- https://github.com/denehyg/reveal.js-menu -->
+    <script src="plugin/customcontrols/customcontrols.js"></script>
+    <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+            // Add the current slide number to the URL hash so that reloading the
+            // page/copying the URL will return you to the same slide
+            hash: true,
+
+            // Prints each fragment on a separate slide
+            pdfSeparateFragments: false,
+
+            // Learn about plugins: https://revealjs.com/plugins/
+            plugins: [
+                RevealMarkdown,
+                RevealHighlight,
+                RevealNotes,
+                RevealMath.KaTeX,
+                RevealMenu,
+                RevealCustomControls,
+                RevealSearch
+            ],
+
+            customcontrols: {
+                controls: [
+                    {
+                        id: 'toggle-overview',
+                        title: 'Toggle overview (O)',
+                        icon: '<i class="fa fa-th"></i>',
+                        action: 'Reveal.toggleOverview();'
+                    }
+                ]
+            },
+
+            menu: {
+                numbers: 'c',
+                openSlideNumber: true,
+                themes: true,
+                themesPath: 'lib/reveal.js/dist/theme/',
+                transitions: true,
+                keyboard: false
+            }
+        });
+    </script>
+</body>
+
+</html>
