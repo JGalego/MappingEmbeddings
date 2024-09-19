@@ -46,7 +46,7 @@
                 <section>
                     <h2>Contents 📓</h2>
                     <ol>
-                        <li>Intro to Embeddings</li>
+                        <li>Introduction to Embeddings</li>
                         <li>Working with Vector Databases</li>
                         <li>Dimensionality Reduction</li>
                         <li>Advanced Retrieval Strategies</li>
@@ -97,11 +97,12 @@
 
             <section>
                 <section>
-                    <h2>Intro to Embeddings</h2>
+                    <h2>Introduction to Embeddings</h2>
+                    <img data-src="images/colorful_pixelated_multidimensional_space.png" width="20%"/>
                 </section>
 
                 <section>
-                    <h4>Let's start by sending some <span style="color:red">love</span> to Amazon Titan...</h4>
+                    <h4>Let's start by sending some <span style="color:red">love</span><br> to Amazon Titan for Embeddings...</h4>
                 </section>
 
                 <section>
@@ -339,6 +340,7 @@
             <section>
                 <section>
                     <h2>Working with Vector Databases</h2>
+                    <img data-src="images/colorful_pixelated_vector_database.png" width="20%"/>
                 </section>
 
                 <section>
@@ -452,6 +454,7 @@
             <section>
                 <section>
                     <h2>Dimensionality Reduction Techniques</h2>
+                    <img data-src="images/colorful_dimensionality_reduction.png" width="20%"/>
                 </section>
 
                 <section>
@@ -597,6 +600,7 @@
             <section>
                 <section>
                     <h2>Advanced Retrieval Strategies</h2>
+                    <img data-src="images/colorful_documents.png" width="20%"/>
                 </section>
 
                 <section>
@@ -688,15 +692,15 @@
                 <section>
                     <h4>RAG Stages</h4>
                     <span class="r-stack">
-                        <ol class="fragment fade-out" data-fragment-index="1">
+                        <ol class="fragment fade-out" data-fragment-index="2">
                             <li>Load</li>
                             <li>Index</li>
                             <li>Store</li>
                             <li>Query</li>
                             <li>Evaluate</li>
-                            <li>Update*</li>
+                            <li style="color:red" class="fragment fade-in" data-fragment-index="1">Update</li>
                         </ol>
-                        <figure class="fragment fade-in" data-fragment-index="1">
+                        <figure class="fragment fade-in" data-fragment-index="2">
                             <img data-src="images/rag_stages.png" width="70%"/>
                             <figcaption>
                                 <small><b>Source:</b>
@@ -713,6 +717,7 @@
 
                 <section>
                     <h4>Step 1: Load</h4>
+                    <!-- Jeff Bezon's Amazon shareholder letters from 1997 to 2017 -->
                     <figure>
                         <img data-src="images/step1_load.png" width="70%"/>
                         <figcaption>
@@ -725,12 +730,10 @@
 
                 <section>
                     <h4>Step 2: Index + Store</h4>
-                    <img data-src="images/step2_index+store.png"/>
-                </section>
-
-                <section>
-                    <h4>Step 2a: Plot</h4>
-                    <img data-src="images/step2_plot.png"/>
+                    <span class="r-stack">
+                        <img data-src="images/step2_index+store.png" class="fragment fade-out" data-fragment-index="1"/>
+                        <img data-src="images/step2_plot.png" class="fragment fade-in" data-fragment-index="1"/>
+                    </span>
                 </section>
 
                 <section>
@@ -743,7 +746,7 @@
                     <span class="r-stack">
                         <img class="fragment fade-out" data-src="images/step4_evaluate1.png" data-fragment-index="1" width="60%"/>
                         <span class="fragment fade-in" data-fragment-index="1">
-                            <img class="fragment fade-out" data-src="images/step4_evaluate2.png" data-fragment-index="2" width="80%"/>
+                            <img class="fragment fade-out" data-src="images/step4_evaluate2.png" data-fragment-index="2" width="90%"/>
                         </span>
                         <img class="fragment fade-in" data-src="images/step4_evaluate3.png" data-fragment-index="2" width="60%"/>
                     </span>
