@@ -34,6 +34,30 @@
                     .reveal h5 {
                         text-transform: none;
                     }
+
+                    .rainbow {
+                        margin-top: 0px;
+                        margin-bottom: 50px;
+                        text-align: center;
+                        font-family: sans-serif;
+                        font-size: 3rem;
+                        letter-spacing: 0.15rem;
+                        text-transform: uppercase;
+                        color: #ffffff;
+                        text-shadow: 4px -4px #ef3550,
+                                     8px -8px #f48fb1,
+                                     12px -12px #7e57c2,
+                                     16px -16px #2196f3,
+                                     20px -20px #26c6da,
+                                     24px -24px #43a047,
+                                     28px -28px #eeff41,
+                                     32px -32px #f9a825,
+                                     36px -36px #ff5722;
+                      }
+                      
+                      body {
+                        background-color: lightgrey;
+                      }
                 </style>
                 <h2>Mapping Embeddings <div style="display: inline" title="Hic svnt dracones!">🗺️🔍</div></h2>
                 <p>From meaning to vectors and back</p>
@@ -102,7 +126,8 @@
                 </section>
 
                 <section>
-                    <h4>Let's start by sending some <span style="color:red">love</span><br> to Amazon Titan for Embeddings...</h4>
+                    <h4>Let's start by sending some <span style="color:red">love</span><br> to <a href="https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html">Amazon Titan for Embeddings</a>...</h4>
+                    <img data-src="images/loading_heart.gif" width="30%"/>
                 </section>
 
                 <section>
@@ -141,7 +166,11 @@
                 <section>
                     <h4>Where is the <span style="color:red">love</span>?</h4>
                     <img data-src="https://64.media.tumblr.com/0aec596c4bf1ce292b90d738dd8311a5/tumblr_ocvsr1tR9F1qek1oqo5_540.gif" width="50%"/>
-                    <p>Let's put this question on hold for now...</p>
+                </section>
+
+                <section>
+                    <h4>Let's put this question on hold for now...</h4>
+                    <p class="fragment fade-in">and work out some definitions.</p>
                 </section>
 
                 <section>
@@ -162,27 +191,39 @@
 
                 <section>
                     <h4>data $\rightarrow$ "meaningful" numbers</h4>
-                    <p><a href="https://huggingface.co/blog/getting-started-with-embeddings">💬</a> <a href="https://www.pinecone.io/learn/series/image-search/">🖼️</a> <a href="https://huggingface.co/blog/cappuch/audio-embedding-wtf">🔊</a> <a href="https://github.com/iejMac/clip-video-encode">🎞️</a></p>
+                    <p><a href="https://huggingface.co/blog/getting-started-with-embeddings">💬</a> <a href="https://www.pinecone.io/learn/series/image-search/">🖼️</a> <a href="https://huggingface.co/blog/cappuch/audio-embedding-wtf">🔊</a> <a href="https://github.com/iejMac/clip-video-encode">🎞️</a> <a href="https://www.biorxiv.org/content/10.1101/2023.11.28.568918v1">🦠</a></p>
                 </section>
 
                 <section>
                     <h4>Example: <a href="https://txt.cohere.com/embedding-archives-wikipedia/">Embedding Wikipedia</a></h4>
-                    <p>What if you had the embeddings of <u>ALL</u> of Wikipedia?</p>
-                    <figure>
-                        <img data-src="images/embeddings_wikipedia_adapted.png" width="100%" />
-                        <figcaption>
-                            <small><b>Source:</b> Adapted from
-                                <a
-                                    href="https://txt.cohere.com/embedding-archives-wikipedia/">Cohere</a>
-                            </small>
-                        </figcaption>
-                    </figure>
+                    <p>What if you had the embeddings of <u>ALL</u> Wikipedia?</p>
+                    <span class="r-stack">
+                        <figure class="fragment fade-out" data-fragment-index="1">
+                            <img data-src="images/embeddings_wikipedia1.png" width="80%" />
+                            <figcaption>
+                                <small><b>Source:</b> 
+                                    <a
+                                        href="https://txt.cohere.com/embedding-archives-wikipedia/">Cohere</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                        <figure class="fragment fade-in" data-fragment-index="1">
+                            <img data-src="images/embeddings_wikipedia2.png" width="80%" />
+                            <figcaption>
+                                <small><b>Source:</b> 
+                                    <a
+                                        href="https://txt.cohere.com/embedding-archives-wikipedia/">Cohere</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                    </span>
                 </section>
 
                 <section>
                     <h4>Example: <a href="https://opensearch.org/platform/search/vector-database.html">Amazon Music</a></h4>
+                    <p>Neighboring vectors, similar tracks</p>
                     <figure>
-                        <img data-src="images/amazon_music_embeddings.png" width="50%" />
+                        <img data-src="images/amazon_music_embeddings.png" width="40%" />
                         <figcaption>
                             <small><b>Source:</b>
                                 <a
@@ -207,15 +248,23 @@
                 </section>
 
                 <section>
+                    <h4>Let's get back to our original example...</h4>
+                </section>
+
+                <section>
                     <h4>Why <span style="color:red">love</span>?</h4>
                     <figure>
                         <img data-src="https://media.tenor.com/p5qIW7OqHpEAAAAM/patrick-star-smile.gif"/>
                     </figure>
-                    <small class="fragment fade-in"><b>Rule of thumb:</b><br>1 token ~ 4 characters in English</small>
+                </section>
+                <section>
+                    <h4 style="display:none">Rule of thumb: 1 token ~ 4 characters</h4>
+                    <p>Rule of thumb:<br>$\texttt{1 token} \sim \texttt{4 characters}$</p>
+                    <small class="fragment fade-in">☝️ <b>Caveat:</b> <em>in English</em>, more on this later...</small>
                 </section>
 
                 <section>
-                    <h4>Let's have a few tokens on <span style="color:orangered">tokenization</span>...</h4>
+                    <h4>So let's spend a few tokens on <span style="color:orangered">tokenization</span>...</h4>
                 </section>
 
                 <section>
@@ -232,7 +281,7 @@
                 </section>
 
                 <section>
-                    <h4>The reason why LLMs are <span style="color:red">bad</span> at math...</h4>
+                    <h4>It's one of the reasons why LLMs<br> are usually <span style="color:red">bad</span> at math...</h4>
                     <figure>
                         <img data-src="images/insane_integer_tokenization.png" width="70%" />
                         <figcaption>
@@ -272,8 +321,8 @@
                 </section>
 
                 <section>
-                    <h4>Let's head back to the main feature...</h4>
-                    <img data-src="https://static1.howtogeekimages.com/wordpress/wp-content/uploads/2022/06/8dce5890.jpg" width="50%"/>
+                    <h4>Ok, time to head back to our main feature...</h4>
+                    <img data-src="https://media1.tenor.com/m/mUzD8XHmgpEAAAAC/movie-time-movie.gif" width="30%"/>
                 </section>
 
                 <section>
@@ -320,7 +369,7 @@
 
                 <section>
                     <h4>How <span style="color:green">good</span>/<span style="color:red">bad</span> is Amazon Titan for Embeddings?</h4>
-                    <small>Inspired by <a href="https://www.philschmid.de/amazon-titan-embeddings">Phil Schmid's post</a></small>
+                    <small>* Inspired by <a href="https://www.philschmid.de/amazon-titan-embeddings">Phil Schmid's post</a></small>
                 </section>
 
                 <section>
@@ -360,13 +409,16 @@
                 </section>
 
                 <section>
-                    <h4>Vector Databases Everywhere</h4>
-                    <img data-src="images/vector_databases_oprah.jpg"/>
+                    <h4>Vector databases are <span class="rainbow">everywhere</span></h4>
+                    <!--img data-src="images/vector_databases_oprah.jpg"/-->
                 </section>
 
                 <section>
-                    <h4>But what exactly is a vector database?</h4>
-                    <small>Any database that treats vectors as <span style="color:orange">first class citizens</span> is a vector database.</small>
+                    <h4>But... <span class="fragment fade-in">what are they?</span></h4>
+                </section>
+
+                <section>
+                    <h4>Any database that treats vectors as <span style="color:orange">first class citizens</span> is a vector database.</h4>
                     <figure>
                         <img data-src="https://www.pinecone.io/_next/image/?url=https%3A%2F%2Fcdn.sanity.io%2Fimages%2Fvr8gru94%2Fproduction%2Fe88ebbacb848b09e477d11eedf4209d10ea4ac0a-1399x537.png&w=1920&q=75" width="70%" />
                         <figcaption>
@@ -406,19 +458,26 @@
 
                 <section>
                     <h4>Vector Databases on <span style="color:orange">AWS</span></h4>
-                    <ul>
-                        <li><a href="https://aws.amazon.com/blogs/big-data/amazon-opensearch-services-vector-database-capabilities-explained/">Amazon OpenSearch Service</a></li>
-                        <li><a href="https://aws.amazon.com/blogs/database/building-ai-powered-search-in-postgresql-using-amazon-sagemaker-and-pgvector/">Amazon RDS PgSQL with pgvector</a></li>
-                        <li><a href="https://aws.amazon.com/blogs/database/leverage-pgvector-and-amazon-aurora-postgresql-for-natural-language-processing-chatbots-and-sentiment-analysis/">Amazon Aurora PgSQL with pgvector</a></li>
-                        <li><a href="https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html">Amazon MemoryDB for Redis</a></li>
-                        <li><a href="https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html">Amazon DocumentDB</a></li>
-                        <li><a href="https://medium.com/swlh/add-similarity-search-to-dynamodb-with-faiss-c68eb6a48b08">Amazon DynamoDB + FAISS</a></li>
-                        <li><a href="https://aws.amazon.com/neptune/machine-learning/">Amazon Neptune ML</a></li>
-                        <li><a href="https://docs.aws.amazon.com/neptune-analytics/latest/userguide/vector-similarity.html">Amazon Neptune Analytics</a></li>
-                        <li><a href="https://aws.amazon.com/marketplace/search/results?searchTerms=vector+database">AWS Marketplace</a></li>
-                        <li>Others: <a href="https://lancedb.github.io/lancedb/">LanceDB</a>, <a href="https://kuzudb.com/">Kùzu</a>, Partner Solution</li>
+                    <small>
+                        <ul>
+                            <li><a href="https://aws.amazon.com/blogs/big-data/amazon-opensearch-services-vector-database-capabilities-explained/">Amazon OpenSearch Service</a></li>
+                            <li><a href="https://aws.amazon.com/blogs/database/building-ai-powered-search-in-postgresql-using-amazon-sagemaker-and-pgvector/">Amazon RDS PgSQL with pgvector</a></li>
+                            <li><a href="https://aws.amazon.com/blogs/database/leverage-pgvector-and-amazon-aurora-postgresql-for-natural-language-processing-chatbots-and-sentiment-analysis/">Amazon Aurora PgSQL with pgvector</a></li>
+                            <li><a href="https://docs.aws.amazon.com/memorydb/latest/devguide/vector-search.html">Amazon MemoryDB for Redis</a></li>
+                            <li><a href="https://docs.aws.amazon.com/documentdb/latest/developerguide/vector-search.html">Amazon DocumentDB</a></li>
+                            <li><a href="https://medium.com/swlh/add-similarity-search-to-dynamodb-with-faiss-c68eb6a48b08">Amazon DynamoDB + FAISS</a></li>
+                            <li><a href="https://aws.amazon.com/neptune/machine-learning/">Amazon Neptune ML</a></li>
+                            <li><a href="https://docs.aws.amazon.com/neptune-analytics/latest/userguide/vector-similarity.html">Amazon Neptune Analytics</a></li>
+                            <li><a href="https://aws.amazon.com/marketplace/search/results?searchTerms=vector+database">AWS Marketplace</a></li>
+                            <li>Partner Solution?</li>
+                            <li>Others?</li>
+                            <ul>
+                                <li><a href="https://lancedb.github.io/lancedb/">LanceDB</a></li>
+                                <li><a href="https://kuzudb.com/">Kùzu</a></li>
+                            </ul>
+                            </ul>
                         </ul>
-                    </ul>
+                    </small>
                 </section>
 
                 <section>
@@ -458,26 +517,34 @@
                 </section>
 
                 <section>
-                    <h4>Dimensionality Reduction</h4>
-                    <p>Mostly for visualization and preprocessing</p>
+                    <h4>Dimensionality reduction is used to <br>make sense of <span style="color:#43a047">high-dimensional data</span></h4>
+                    <img data-src="images/travel_higher_dimensions.gif"/>
                 </section>
 
                 <section>
-                    <h4>Categories</h4>
+                    <h4>It can bring huge benefits...</h4>
                     <ul>
-                        <li>global vs local</li>
-                        <li>linear vs non-linear</li>
-                        <li>parametric vs non-parametric</li>
-                        <li>deterministic vs stochastic</li>
+                        <li class="fragment fade-in">Compute / Storage ⬇️</li>
+                        <li class="fragment fade-in">Data Visualization ✨</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h4>Techniques</h4>
+                    <h4>It comes in many flavors...</h4>
                     <ul>
-                        <li><a href="https://www.cs.cmu.edu/~elaw/papers/pca.pdf">PCA</a> captures global patterns</li>
-                        <li><a href="https://lvdmaaten.github.io/tsne/">t-SNE</a> emphasizes local patterns and clusters</li>
-                        <li><a href="https://arxiv.org/abs/1802.03426">UMAP</a> handles complex relationships</li>
+                        <li>global 🆚 local</li>
+                        <li>linear 🆚 non-linear</li>
+                        <li>parametric 🆚 non-parametric</li>
+                        <li>deterministic 🆚 stochastic</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4>We'll focus on 3 different techniques...</h4>
+                    <ul>
+                        <li class="fragment fade-in"><a href="https://www.cs.cmu.edu/~elaw/papers/pca.pdf">PCA</a> captures global patterns</li>
+                        <li class="fragment fade-in"><a href="https://lvdmaaten.github.io/tsne/">t-SNE</a> emphasizes local patterns and clusters</li>
+                        <li class="fragment fade-in"><a href="https://arxiv.org/abs/1802.03426">UMAP</a> handles complex relationships</li>
                     </ul>
                 </section>
 
@@ -495,18 +562,6 @@
                 </section>
 
                 <section>
-                    <h4>Von Neumann's <s>Elephant</s> Woolly Mammoth</h4>
-                    <figure>
-                        <img data-src="images/woolly_mammoth_dim_redux.png" width="90%" />
-                        <figcaption>
-                            <small><b>Source:</b>
-                                <a href="https://pair-code.github.io/understanding-umap/">PAIR</a>
-                            </small>
-                        </figcaption>
-                    </figure>
-                </section>
-
-                <section>
                     <h4>The map is <span class="fragment highlight-red" data-fragment-index="1">not</span> the territory!</h4>
                     <span class="r-stack">
                         <img data-src="images/map_projections.png" class="fragment fade-out" data-fragment-index="1"/>
@@ -515,12 +570,37 @@
                 </section>
 
                 <section>
+                    <h4>Von Neumann's <s>Elephant</s> Woolly Mammoth</h4>
+                    <span class="r-stack">
+                        <figure class="fragment fade-out" data-fragment-index="1">
+                            <img data-src="images/umaping_mammoth.gif" width="90%" />
+                            <figcaption>
+                                <small><b>Source:</b>
+                                    <a href="https://pair-code.github.io/understanding-umap/">PAIR</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                        <figure class="fragment fade-in" data-fragment-index="1">
+                            <img data-src="images/woolly_mammoth_dim_redux.png" width="90%" />
+                            <figcaption>
+                                <small><b>Source:</b>
+                                    <a href="https://pair-code.github.io/understanding-umap/">PAIR</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                </span>
+                </section>
+
+                <section>
                     <h4>Now, you may be wondering...</h4>
                 </section>
 
                 <section>
-                    <h4>How do models represent more features<br>than they have dimensions?</h4>
-                    <p class="fragment fade-in">Let's talk about  <span style="color:red">Superposition</span></p>
+                    <h4>How do models represent <span style="color:red">more</span> features<br>than they have dimensions?</h4>
+                </section>
+
+                <section>
+                    <h4>Let's talk about  <span style="color:blue"><b>Superposition</b></span></h4>
                     <small class="fragment fade-in">(not the quantum type)</small>
                 </section>
 
