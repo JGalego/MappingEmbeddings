@@ -259,12 +259,13 @@
                 </section>
                 <section>
                     <h4 style="display:none">Rule of thumb: 1 token ~ 4 characters</h4>
-                    <p>Rule of thumb:<br>$\texttt{1 token} \sim \texttt{4 characters}$</p>
+                    <p>You may have heard of the <br> $\texttt{1 token} \sim \texttt{4 chars}$ rule of thumb</p>
                     <small class="fragment fade-in">☝️ <b>Caveat:</b> <em>in English</em>, more on this later...</small>
                 </section>
 
                 <section>
-                    <h4>So let's spend a few tokens on <span style="color:orangered">tokenization</span>...</h4>
+                    <h4>Well, things are a bit more complicated than that...</h4>
+                    <p class="fragment fade-in">so let's spend a few tokens on <span style="color:orangered">tokenization</span></p>
                 </section>
 
                 <section>
@@ -281,7 +282,20 @@
                 </section>
 
                 <section>
-                    <h4>It's one of the reasons why LLMs<br> are usually <span style="color:red">bad</span> at math...</h4>
+                    <h4>Some are just plain 𝚠𝔢𝒾𝐫𝔡...</h4>
+                    <figure>
+                        <img data-src="images/SolidGoldMagikarp.png" width="40%" />
+                        <figcaption>
+                            <small><b>Source:</b> Adapted from
+                                <a
+                                    href="https://www.lesswrong.com/posts/jbi9kxhb4iCQyWG9Y/explaining-solidgoldmagikarp-by-looking-at-it-from-random">LessWrong</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Tokenization is one of the reasons why LLMs<br> are usually <span style="color:red">bad</span> at math...</h4>
                     <figure>
                         <img data-src="images/insane_integer_tokenization.png" width="70%" />
                         <figcaption>
@@ -302,22 +316,44 @@
 
                 <section>
                     <h4><a href="https://gist.github.com/JGalego/3e13c29655f06d795b597e0b1e29da19">Replicating <em>Integer Tokenization is Insane</em> 🤯 </a></h4>
-                    <figure>
+                    <!--figure>
                         <img data-src="images/replicating_ifii.png" width="100%" />
-                    </figure>
+                    </figure-->
+                    <span class="r-stack">
+                        <span class="fragment fade-out" data-fragment-index="1">
+                            <img data-src="images/unique_number_tokens.png"/>
+                        </span>
+                        <span class="fragment fade-in" data-fragment-index="1">
+                            <img data-src="images/number_token_count.png" class="fragment fade-out" data-fragment-index="2"/>
+                        </span>
+                        <span class="fragment fade-in" data-fragment-index="2">
+                            <img data-src="images/number_composition.png"/>
+                        </span>
+                    </span>
                 </section>
 
                 <section>
                     <h4>All languages are not <s>created</s> <span style="color:orangered">tokenized</span> equal!</h4>
-                    <figure>
-                        <img data-src="images/tokenizers_languages.gif" width="70%" />
-                        <figcaption>
-                            <small><b>Source:</b>
-                                <a
-                                    href="https://huggingface.co/spaces/yenniejun/tokenizers-languages">Art Fish Intelligence</a>
-                            </small>
-                        </figcaption>
-                    </figure>
+                    <span class="r-stack">
+                        <figure class="fragment fade-out" data-fragment-index="1">
+                            <img data-src="images/tokenizers_languages.gif" width="70%" />
+                            <figcaption>
+                                <small><b>Source:</b>
+                                    <a
+                                        href="https://huggingface.co/spaces/yenniejun/tokenizers-languages">Art Fish Intelligence</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                        <figure class="fragment fade-in" data-fragment-index="1">
+                            <img data-src="images/tokenized_languages_examples.png"/>
+                            <figcaption>
+                                <small><b>Source:</b>
+                                    <a
+                                        href="https://huggingface.co/spaces/yenniejun/tokenizers-languages">Art Fish Intelligence</a>
+                                </small>
+                            </figcaption>
+                        </figure>
+                    </span>
                 </section>
 
                 <section>
