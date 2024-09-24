@@ -379,6 +379,197 @@
                 </section>
 
                 <section>
+                    <h4><span style="color:orangered">Image</span> Embeddings 🖼️</h4>
+                </section>
+
+                <section>
+                    <h4>Contrastive Learning</h4>
+                    <figure>
+                        <img data-src="images/contrastive_learning.png"/>
+                        <figcaption>
+                            <small><b>Source:</b> Adapted from
+                                <a
+                                    href="https://yann.lecun.com/exdb/publis/pdf/hadsell-chopra-lecun-06.pdf">Hadsell, Chopra & LeCun (2005)</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Distance Measures</h4>
+                    <figure>
+                        <img data-src="images/distance_measures.png" width="50%"/>
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a
+                                    href="https://www.maartengrootendorst.com/blog/distances/">
+                                    Maarten Grootendorst</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4><a href="https://gist.github.com/JGalego/8bdc8fb48d621b76392ef4bfe9a8d829">Train an Image Embedding model from scratch</a></h4>
+                    <pre><code class="language-python" data-trim data-noescape data-line-numbers="|13-17|23-24|26-30|32-34|43-46|48-51|53-55|67-69|71-79|81-83|85-90|92-93|99-106|108-113|119-126|132-133|135-138|144-145|147-150">
+                        # pylint: disable=import-error,invalid-name
+                        """
+                        Train image embeddings model from scratch using contrastive learning.
+
+                        Adapted from Hadsell, Chopra & LeCun (2005)
+                        https://yann.lecun.com/exdb/publis/pdf/hadsell-chopra-lecun-06.pdf
+                        and Underfitted's 'Training a model to generate image embeddings'
+                        https://underfitted.svpino.com/p/training-a-model-to-generate-image
+                        """
+
+                        import numpy as np
+
+                        from keras import datasets, Input, Model
+                        from keras.layers import Dense, Lambda
+                        from keras.metrics import binary_accuracy, BinaryAccuracy
+                        from keras.models import Sequential
+                        from keras.ops import cast, maximum, norm, square
+
+                        ########
+                        # Data #
+                        ########
+
+                        # Load dataset
+                        (X_train, y_train), (X_test, y_test) = datasets.mnist.load_data()
+
+                        # Reshape and normalize it
+                        X_train = X_train.reshape(-1, 784)
+                        X_test = X_test.reshape(-1, 784)
+                        X_train = X_train.astype('float32') / 255.0
+                        X_test = X_test.astype('float32') / 255.0
+
+                        def generate_pairs(X, y):
+                            """
+                            Creates a collection of positive and negative image pairs.
+                            """
+
+                            X_pairs = []
+                            y_pairs = []
+
+                            for i in enumerate(X):
+                                digit = y[i]
+
+                                # Create positive match
+                                positive_digit_index = np.random.choice(np.where(y == digit)[0])
+                                X_pairs.append([X[i], X[positive_digit_index]])
+                                y_pairs.append([0])
+
+                                # Create negative match
+                                negative_digit_index = np.random.choice(np.where(y != digit)[0])
+                                X_pairs.append([X[i], X[negative_digit_index]])
+                                y_pairs.append([1])
+
+                            # Shuffle everything
+                            indices = np.arange(len(X_pairs))
+                            np.random.shuffle(indices)
+
+                            return np.array(X_pairs)[indices], np.array(y_pairs)[indices]
+
+                        # Prepare input pairs
+                        X_train_pairs, y_train_pairs = generate_pairs(X_train, y_train)
+                        X_test_pairs, y_test_pairs = generate_pairs(X_test, y_test)
+
+                        #########
+                        # Model #
+                        #########
+
+                        # Define inputs
+                        input1 = Input(shape=(784,))
+                        input2 = Input(shape=(784,))
+
+                        # Build siamese network
+                        network = Sequential(
+                            [
+                                Input(shape=(784,)),
+                                Dense(512, activation="relu"),
+                                Dense(256, activation="relu"),
+                                Dense(128, activation=None),
+                            ]
+                        )
+
+                        # Define twin branches
+                        twin1 = network(input1)
+                        twin2 = network(input2)
+
+                        # Define distance
+                        def euclidean_distance(a, b):
+                            """Computes the Euclidean distance."""
+                            return norm(a - b, axis=1, keepdims=True)
+
+                        distance = Lambda(euclidean_distance)(twin1, twin2)
+
+                        # Set up the model
+                        model = Model(inputs=[input1, input2], outputs=distance)
+
+                        ########
+                        # Loss #
+                        ########
+
+                        def contrastive_loss(y, d):
+                            """
+                            Computes the contrastive loss from Hasdell, Chopra & LeCun (2005)
+                            """
+                            margin = 1.0
+                            y = cast(y, d.dtype)
+                            loss = (1 - y) / 2 * square(d) + y / 2 * square(maximum(0.0, margin - d))
+                            return loss
+
+                        # Compile model using contrastive loss
+                        model.compile(
+                            loss=contrastive_loss,
+                            optimizer="adam",
+                            metrics=[binary_accuracy]
+                        )
+
+                        #########
+                        # Train #
+                        #########
+
+                        # Fit the model
+                        history = model.fit(
+                            x=[X_train_pairs[:, 0], X_train_pairs[:, 1]],
+                            y=y_train_pairs[:],
+                            validation_data=([X_test_pairs[:, 0], X_test_pairs[:, 1]], y_test_pairs[:]),
+                            batch_size=32,
+                            epochs=5,
+                        )
+
+                        ########
+                        # Test #
+                        ########
+
+                        # Generate predictions
+                        predictions = model.predict([X_test_pairs[:, 0], X_test_pairs[:, 1]]) >= 0.5
+
+                        # Compute model accuracy
+                        accuracy = BinaryAccuracy()
+                        accuracy.update_state(y_test_pairs, predictions.astype(int))
+                        print(f"Accuracy: {accuracy.result().numpy():.2f}")
+
+                        ############
+                        # Generate #
+                        ############
+
+                        # Initialize model
+                        embedding_model = model.layers[2]
+
+                        # Generate embeddings
+                        digits = np.where(y_test == 7)[0]
+                        embeddings = embedding_model.predict(X_test[np.random.choice(digits)].reshape(1, -1))
+                        print(embeddings, len(embeddings))
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h4><span style="color:orangered">Sentence</span> Embeddings 💬</h4>
+                </section>
+
+                <section>
                     <h4>Step 1: Model</h4>
                     <pre><code>pip install -q sentence-transformers</code></pre>
                     <img data-src="images/sentence_transformer.png" width="60%"/>
