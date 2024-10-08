@@ -75,8 +75,6 @@
                         <li>Dimensionality Reduction Techniques</li>
                         <li>Advanced Retrieval Strategies</li>
                         <li>Retrieval Augmented Generation (RAG)</li>
-                        <li>Key Takeaways</li>
-                        <li>References</li>
                     </ol>
                 </section>
 
@@ -791,13 +789,37 @@
                 </section>
 
                 <section>
-                    <h4 style="display:none">Toy Example</h4>
+                    <h4>Embedding a 2D circle with t-SNE</h4>
                     <figure>
-                        <img data-src="images/data_dim_redux.png" width="70%" />
+                        <img data-src="images/knots.gif" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://github.com/dkobak/tsne-umap-init">Kobak & Linderman (2021)</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Initialization is critical</h4>
+                    <figure>
+                        <img data-src="images/data_dim_redux.png" width="60%" />
                         <figcaption>
                             <small><b>Source:</b>
                                 Adapted from <a
                                     href="https://www.nature.com/articles/s41587-020-00809-z">Kobak & Linderman (2021)</a>
+                            </small>
+                        </figcaption>
+                    </figure>
+                </section>
+
+                <section>
+                    <h4>Dimensionality reduction as probabilistic inference</h4>
+                    <figure>
+                        <img data-src="images/dim_redux_as_probabilistic_inference.png" width="70%" />
+                        <figcaption>
+                            <small><b>Source:</b>
+                                <a href="https://arxiv.org/abs/2405.17412">Ravuri & Lawrence (2024)</a>
                             </small>
                         </figcaption>
                     </figure>
@@ -1086,23 +1108,23 @@
 
                 <section>
                     <h4 style="display:none">In summary...</h4>
-					<small>
-						<ul>
-							<li class="fragment fade-in"><b>Embedding models</b> turn data into "meaningful" numerical representations (vectors)</li>
-							<br>
-							<li class="fragment fade-in"><b>Vector databases</b> can be used to search through these representations efficiently</li>
-							<br>
-							<li class="fragment fade-in"><b>Dimensionality reduction</b> allows us to to make sense of high-dimensional data</li>
-							<br>
-							<li class="fragment fade-in"><b>Advanced retrieval strategies</b> can be a great asset when naive search is not enough</li>
-							<br>
-							<li class="fragment fade-in"><b>RAG</b> ties everything together by bringing external data to the model but...</li>
-							<br>
-							<li class="fragment fade-in">It's still just a clever hack!</li>
-							<br>
-							<li class="fragment fade-in">There's much we don't know...</li>
-						</ul>
-					</small>
+                    <small>
+                        <ul>
+                            <li class="fragment fade-in"><b>Embedding models</b> turn data into "meaningful" numerical representations (vectors)</li>
+                            <br>
+                            <li class="fragment fade-in"><b>Vector databases</b> can be used to search through these representations efficiently</li>
+                            <br>
+                            <li class="fragment fade-in"><b>Dimensionality reduction</b> allows us to to make sense of high-dimensional data</li>
+                            <br>
+                            <li class="fragment fade-in"><b>Advanced retrieval strategies</b> can be a great asset when naive search is not enough</li>
+                            <br>
+                            <li class="fragment fade-in"><b>RAG</b> ties everything together by bringing external data to the model but...</li>
+                            <br>
+                            <li class="fragment fade-in">It's still just a clever hack!</li>
+                            <br>
+                            <li class="fragment fade-in">There's much we don't know...</li>
+                        </ul>
+                    </small>
                 </section>
 
                 <section>
